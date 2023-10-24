@@ -7,8 +7,8 @@ from flask_restful import Api, Resource
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 db = SQLAlchemy(app)
-api = Api(app)
 migrate = Migrate(app, db)
+api = Api(app)
 
 # Import models
 from models import Hero, Power, Hero_Power

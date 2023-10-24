@@ -1,8 +1,11 @@
-from app import db
-from app.models import Power, Hero, HeroPower
+from app import app, db
+from models import Power, Hero, Hero_Power
 import random
 
+
+
 def seed_powers():
+  with app.app_context():
     powers_data = [
         {"name": "super strength", "description": "gives the wielder super-human strengths"},
         {"name": "flight", "description": "gives the wielder the ability to fly through the skies at supersonic speed"},
@@ -15,6 +18,7 @@ def seed_powers():
         db.session.add(power)
 
 def seed_heroes():
+  with app.app_context():
     heroes_data = [
         {"name": "Kamala Khan", "super_name": "Ms. Marvel"},
         {"name": "Doreen Green", "super_name": "Squirrel Girl"},
@@ -33,6 +37,7 @@ def seed_heroes():
         db.session.add(hero)
 
 def add_powers_to_heroes():
+  with app.app_context():
     strengths = ["Strong", "Weak", "Average"]
     all_powers = Power.query.all()
 
