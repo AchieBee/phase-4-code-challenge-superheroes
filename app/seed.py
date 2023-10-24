@@ -1,35 +1,60 @@
-puts "🦸‍♀️ Seeding powers..."
-Power.create([
-  { name: "super strength", description: "gives the wielder super-human strengths" },
-  { name: "flight", description: "gives the wielder the ability to fly through the skies at supersonic speed" },
-  { name: "super human senses", description: "allows the wielder to use her senses at a super-human level" },
-  { name: "elasticity", description: "can stretch the human body to extreme lengths" }
-])
+from app import db
+from app.models import Power, Hero, HeroPower
+import random
 
-puts "🦸‍♀️ Seeding heroes..."
-Hero.create([
-  { name: "Kamala Khan", super_name: "Ms. Marvel" },
-  { name: "Doreen Green", super_name: "Squirrel Girl" },
-  { name: "Gwen Stacy", super_name: "Spider-Gwen" },
-  { name: "Janet Van Dyne", super_name: "The Wasp" },
-  { name: "Wanda Maximoff", super_name: "Scarlet Witch" },
-  { name: "Carol Danvers", super_name: "Captain Marvel" },
-  { name: "Jean Grey", super_name: "Dark Phoenix" },
-  { name: "Ororo Munroe", super_name: "Storm" },
-  { name: "Kitty Pryde", super_name: "Shadowcat" },
-  { name: "Elektra Natchios", super_name: "Elektra" }
-])
+def seed_powers():
+    powers_data = [
+        {"name": "super strength", "description": "gives the wielder super-human strengths"},
+        {"name": "flight", "description": "gives the wielder the ability to fly through the skies at supersonic speed"},
+        {"name": "super human senses", "description": "allows the wielder to use her senses at a super-human level"},
+        {"name": "elasticity", "description": "can stretch the human body to extreme lengths"}
+    ]
 
-puts "🦸‍♀️ Adding powers to heroes..."
+    for data in powers_data:
+        power = Power(**data)
+        db.session.add(power)
 
-strengths = ["Strong", "Weak", "Average"]
-Hero.all.each do |hero|
-  rand(1..3).times do
-    # get a random power
-    power = Power.find(Power.pluck(:id).sample)
+def seed_heroes():
+    heroes_data = [
+        {"name": "Kamala Khan", "super_name": "Ms. Marvel"},
+        {"name": "Doreen Green", "super_name": "Squirrel Girl"},
+        {"name": "Gwen Stacy", "super_name": "Spider-Gwen"},
+        {"name": "Janet Van Dyne", "super_name": "The Wasp"},
+        {"name": "Wanda Maximoff", "super_name": "Scarlet Witch"},
+        {"name": "Carol Danvers", "super_name": "Captain Marvel"},
+        {"name": "Jean Grey", "super_name": "Dark Phoenix"},
+        {"name": "Ororo Munroe", "super_name": "Storm"},
+        {"name": "Kitty Pryde", "super_name": "Shadowcat"},
+        {"name": "Elektra Natchios", "super_name": "Elektra"}
+    ]
 
-    HeroPower.create!(hero_id: hero.id, power_id: power.id, strength: strengths.sample)
-  end
-end
+    for data in heroes_data:
+        hero = Hero(**data)
+        db.session.add(hero)
 
-puts "🦸‍♀️ Done seeding!"
+def add_powers_to_heroes():
+    strengths = ["Strong", "Weak", "Average"]
+    all_powers = Power.query.all()
+
+    for hero in Hero.query.all():
+        for _ in range(random.randint(1, 3)):
+            power = random.choice(all_powers)
+            strength = random.choice(strengths)
+            hero_power = HeroPower(hero=hero, power=power, strength=strength)
+            db.session.add(hero_power)
+
+def main():
+    print("🦸‍♀️ Seeding powers...")
+    seed_powers()
+
+    print("🦸‍♀️ Seeding heroes...")
+    seed_heroes()
+
+    print("🦸‍♀️ Adding powers to heroes...")
+    add_powers_to_heroes()
+
+    db.session.commit()
+    print("🦸‍♀️ Done seeding!")
+
+if __name__ == '__main__':
+    main()
